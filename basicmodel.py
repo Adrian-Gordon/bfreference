@@ -1,7 +1,5 @@
 
 
-from generatedata import *
-
 import tensorflow as tf
 
 import os
