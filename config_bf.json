@@ -1,0 +1,17 @@
+{
+"data_modulename":"generate_bf_data",
+"datafilename": "preprocessed_generate.csv",
+"savefilename":"bf-seq2seq0",
+"seq_length": 30,
+"input_sequence_length": 10,
+"output_sequence_length": 5,
+"batch_size" :1000,
+"input_dim" : 4,
+"output_dim":2,
+"num_stacked_layers" :1,
+"hidden_dim" :3,
+"learning_rate" :0.05,
+"l2_regularization_lambda":0.03,
+"gradient_clipping": 2.5,
+"epochs": 100
+}
