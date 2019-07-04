@@ -1,0 +1,16 @@
+{
+  "name": "bftimeseries",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generateTimeseriesData.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^3.2.3",
+    "nconf": "^0.10.0",
+    "winston": "^3.2.1"
+  }
+}
