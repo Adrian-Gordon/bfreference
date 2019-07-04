@@ -1,5 +1,7 @@
 #A class to prreprocess bf timeseries data
-
+# Usage python preprocess_bf_data <configfilename>
+import sys
+import json
 import tensorflow as tf
 import numpy as np
 
@@ -7,6 +9,11 @@ import pandas as pd
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.externals import joblib
+
+configfilename = sys.argv[1]
+
+with open(configfilename,'r') as f:
+  config = json.load(f)
 
 class GenerateData:
   data =[]
@@ -111,7 +118,7 @@ class GenerateData:
   
 
 #test
-gd = GenerateData('../nodejs/data/generate.csv','../nodejs/data/scaler.save',30, 30,'../nodejs/data/preprocessed_generate.csv')
+gd = GenerateData(config["input_datafile_path"],config["scaler_file_path"],config["sequence_length"], config["offset"],config["output_datafile_path"])
 #print("processed data: ")
 #print(gd.processed_data)
 #print(gd.data[0:60])

@@ -1,16 +1,8 @@
 {
-"data_modulename":"generate_bf_data",
-"datafilename": "./data/generate.csv",
-"savefilename":"bf-seq2seq0",
-"input_sequence_length": 30,
-"output_sequence_length": 10,
-"batch_size" :20,
-"input_dim" : 40,
-"output_dim":2,
-"num_stacked_layers" :2,
-"hidden_dim" :64,
-"learning_rate" :0.01,
-"l2_regularization_lambda":0.03,
-"gradient_clipping": 2.5,
-"epochs": 100
+
+"input_datafile_path": "../nodejs/data/generate.csv",
+"output_datafile_path": "../nodejs/data/preprocessed_generate.csv",
+"scaler_file_path":"../nodejs/data/scaler.save",
+"sequence_length": 30,
+"offset": 30
 }
