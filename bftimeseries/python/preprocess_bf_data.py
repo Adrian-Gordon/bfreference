@@ -10,14 +10,10 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.externals import joblib
 
-configfilename = sys.argv[1]
 
-with open(configfilename,'r') as f:
-  config = json.load(f)
 
 class GenerateData:
-  data =[]
-  processed_data =pd.DataFrame()
+  
 
   def __init__(self, datafile_path,scaler_path,seq_length, offset, output_path):
     '''
@@ -27,55 +23,81 @@ class GenerateData:
         seq_length -- integer, no of entries per timeseries
         offset -- integer, offset from start of data series to use in output. 
                   e.g. seq_length= 30, offset = 30 : skip first 30,then use the next 30
+
+
     '''
-    GenerateData.data = pd.read_csv(datafile_path)
-    print("imported data from "+ datafile_path)
-    GenerateData.data['layprice1'] = GenerateData.data['layprice1'].replace(0,1000)
-    GenerateData.data['layprice2'] = GenerateData.data['layprice2'].replace(0,1000)
-    GenerateData.data['layprice3'] = GenerateData.data['layprice3'].replace(0,1000)
-    GenerateData.data['layprice4'] = GenerateData.data['layprice4'].replace(0,1000)
-    GenerateData.data['layprice5'] = GenerateData.data['layprice5'].replace(0,1000)
-    GenerateData.data['layprice6'] = GenerateData.data['layprice6'].replace(0,1000)
-    GenerateData.data['layprice7'] = GenerateData.data['layprice7'].replace(0,1000)
-    GenerateData.data['layprice8'] = GenerateData.data['layprice8'].replace(0,1000)
-    GenerateData.data['layprice9'] = GenerateData.data['layprice9'].replace(0,1000)
-    GenerateData.data['layprice10'] = GenerateData.data['layprice10'].replace(0,1000)
+    self.data =[]
+    self.included_data = pd.DataFrame() #data to be included - i.e. those with odds in the required rance
+    self.processed_data =pd.DataFrame() #the processed data
+    self.data = pd.read_csv(datafile_path)
+    self.data['layprice1'] = self.data['layprice1'].replace(0,1000)
+    self.data['layprice2'] = self.data['layprice2'].replace(0,1000)
+    self.data['layprice3'] = self.data['layprice3'].replace(0,1000)
+    self.data['layprice4'] = self.data['layprice4'].replace(0,1000)
+    self.data['layprice5'] = self.data['layprice5'].replace(0,1000)
+    self.data['layprice6'] = self.data['layprice6'].replace(0,1000)
+    self.data['layprice7'] = self.data['layprice7'].replace(0,1000)
+    self.data['layprice8'] = self.data['layprice8'].replace(0,1000)
+    self.data['layprice9'] = self.data['layprice9'].replace(0,1000)
+    self.data['layprice10'] = self.data['layprice10'].replace(0,1000)
 
-    GenerateData.data['laydepth1'] = GenerateData.data['laydepth1'].replace(0,1)
-    GenerateData.data['laydepth2'] = GenerateData.data['laydepth2'].replace(0,1)
-    GenerateData.data['laydepth3'] = GenerateData.data['laydepth3'].replace(0,1)
-    GenerateData.data['laydepth4'] = GenerateData.data['laydepth4'].replace(0,1)
-    GenerateData.data['laydepth5'] = GenerateData.data['laydepth5'].replace(0,1)
-    GenerateData.data['laydepth6'] = GenerateData.data['laydepth6'].replace(0,1)
-    GenerateData.data['laydepth7'] = GenerateData.data['laydepth7'].replace(0,1)
-    GenerateData.data['laydepth8'] = GenerateData.data['laydepth8'].replace(0,1)
-    GenerateData.data['laydepth9'] = GenerateData.data['laydepth9'].replace(0,1)
-    GenerateData.data['laydepth10'] = GenerateData.data['laydepth10'].replace(0,1)
+    self.data['laydepth1'] = self.data['laydepth1'].replace(0,1)
+    self.data['laydepth2'] = self.data['laydepth2'].replace(0,1)
+    self.data['laydepth3'] = self.data['laydepth3'].replace(0,1)
+    self.data['laydepth4'] = self.data['laydepth4'].replace(0,1)
+    self.data['laydepth5'] = self.data['laydepth5'].replace(0,1)
+    self.data['laydepth6'] = self.data['laydepth6'].replace(0,1)
+    self.data['laydepth7'] = self.data['laydepth7'].replace(0,1)
+    self.data['laydepth8'] = self.data['laydepth8'].replace(0,1)
+    self.data['laydepth9'] = self.data['laydepth9'].replace(0,1)
+    self.data['laydepth10'] = self.data['laydepth10'].replace(0,1)
 
-    GenerateData.data['backprice1'] = GenerateData.data['backprice1'].replace(0,1000)
-    GenerateData.data['backprice2'] = GenerateData.data['backprice2'].replace(0,1000)
-    GenerateData.data['backprice3'] = GenerateData.data['backprice3'].replace(0,1000)
-    GenerateData.data['backprice4'] = GenerateData.data['backprice4'].replace(0,1000)
-    GenerateData.data['backprice5'] = GenerateData.data['backprice5'].replace(0,1000)
-    GenerateData.data['backprice6'] = GenerateData.data['backprice6'].replace(0,1000)
-    GenerateData.data['backprice7'] = GenerateData.data['backprice7'].replace(0,1000)
-    GenerateData.data['backprice8'] = GenerateData.data['backprice8'].replace(0,1000)
-    GenerateData.data['backprice9'] = GenerateData.data['backprice9'].replace(0,1000)
-    GenerateData.data['backprice10'] = GenerateData.data['backprice10'].replace(0,1000)
+    self.data['backprice1'] = self.data['backprice1'].replace(0,1000)
+    self.data['backprice2'] = self.data['backprice2'].replace(0,1000)
+    self.data['backprice3'] = self.data['backprice3'].replace(0,1000)
+    self.data['backprice4'] = self.data['backprice4'].replace(0,1000)
+    self.data['backprice5'] = self.data['backprice5'].replace(0,1000)
+    self.data['backprice6'] = self.data['backprice6'].replace(0,1000)
+    self.data['backprice7'] = self.data['backprice7'].replace(0,1000)
+    self.data['backprice8'] = self.data['backprice8'].replace(0,1000)
+    self.data['backprice9'] = self.data['backprice9'].replace(0,1000)
+    self.data['backprice10'] = self.data['backprice10'].replace(0,1000)
 
-    GenerateData.data['backdepth1'] = GenerateData.data['backdepth1'].replace(0,1)
-    GenerateData.data['backdepth2'] = GenerateData.data['backdepth2'].replace(0,1)
-    GenerateData.data['backdepth3'] = GenerateData.data['backdepth3'].replace(0,1)
-    GenerateData.data['backdepth4'] = GenerateData.data['backdepth4'].replace(0,1)
-    GenerateData.data['backdepth5'] = GenerateData.data['backdepth5'].replace(0,1)
-    GenerateData.data['backdepth6'] = GenerateData.data['backdepth6'].replace(0,1)
-    GenerateData.data['backdepth7'] = GenerateData.data['backdepth7'].replace(0,1)
-    GenerateData.data['backdepth8'] = GenerateData.data['backdepth8'].replace(0,1)
-    GenerateData.data['backdepth9'] = GenerateData.data['backdepth9'].replace(0,1)
-    GenerateData.data['backdepth10'] = GenerateData.data['backdepth10'].replace(0,1)
+    self.data['backdepth1'] = self.data['backdepth1'].replace(0,1)
+    self.data['backdepth2'] = self.data['backdepth2'].replace(0,1)
+    self.data['backdepth3'] = self.data['backdepth3'].replace(0,1)
+    self.data['backdepth4'] = self.data['backdepth4'].replace(0,1)
+    self.data['backdepth5'] = self.data['backdepth5'].replace(0,1)
+    self.data['backdepth6'] = self.data['backdepth6'].replace(0,1)
+    self.data['backdepth7'] = self.data['backdepth7'].replace(0,1)
+    self.data['backdepth8'] = self.data['backdepth8'].replace(0,1)
+    self.data['backdepth9'] = self.data['backdepth9'].replace(0,1)
+    self.data['backdepth10'] = self.data['backdepth10'].replace(0,1)
 
+    self.nsequences = len(self.data) / ( seq_length + offset)
+
+  def preprocess(self, max_starting_lay_price, max_starting_back_price, seq_length, offset):
+    for i in range (self.nsequences):
+      sequence  = self.data[i * seq_length + offset: (i * seq_length) + seq_length + offset]
+      add_it = False
+      for index, row in sequence.iterrows():
+        if row['layprice1'] <= max_starting_lay_price and row['backprice1'] <= max_starting_back_price:
+          add_it = True
+          
+      if add_it:
+          self.included_data = self.included_data.append(sequence,ignore_index = True)
+
+    n_good_sequences = len(self.included_data) / (seq_length + offset) #the number of sequences to preprocess
+
+    print("n_good_sequences", n_good_sequences)
+
+    for j in range(n_good_sequences):
+      sequence  = self.included_data[i * seq_length + offset: (i * seq_length) + seq_length + offset]
+      starting_layprice1 = sequence['layprice1'][0]
+      print(starting_layprice1)
+
+'''
     print("Generating Sequences")
-   # print(GenerateData.data)
     _nsequences = len(GenerateData.data) / ( seq_length + offset)
     print(_nsequences)
     
@@ -87,20 +109,9 @@ class GenerateData:
           add_it = True
           
       if add_it:
-          #print("Add it")
-          #diff = _sequence.pct_change()
-          #GenerateData.processed_data = GenerateData.processed_data.append(diff,ignore_index = True).fillna(value=0)
           GenerateData.processed_data = GenerateData.processed_data.append(_sequence,ignore_index = True)
 
-     # print(_sequence)
-
-     # diff = _sequence.pct_change()
-      #print(diff)
-     # GenerateData.processed_data = GenerateData.processed_data.append(diff,ignore_index = True).fillna(value=0)
-     # GenerateData.processed_data = GenerateData.processed_data.append(_sequence,ignore_index = True)
-      #standardise everything
-
-    print("Generated Sequences")
+      print("Generated Sequences")
 
     print("Scaling")
     scaler = StandardScaler()
@@ -114,11 +125,16 @@ class GenerateData:
     GenerateData.processed_data.to_csv(output_path, index = False)
     print("Preprocessed data saved")
     
-
+'''
   
 
 #test
+'''configfilename = sys.argv[1]
+
+with open(configfilename,'r') as f:
+  config = json.load(f)
 gd = GenerateData(config["input_datafile_path"],config["scaler_file_path"],config["sequence_length"], config["offset"],config["output_datafile_path"])
+'''
 #print("processed data: ")
 #print(gd.processed_data)
 #print(gd.data[0:60])

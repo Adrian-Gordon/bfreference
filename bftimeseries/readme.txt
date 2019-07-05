@@ -1,0 +1,1 @@
+Prices for each timeseries are relative to the first price in the sequence, e.g.: 6.0, 6.1, 6.2, 6.1, 6.0, 5.9 => 0.0, 0.1, 0.2, 0.1, 0.0, -0.1
