@@ -1,8 +1,11 @@
 {
 
-"input_datafile_path": "../nodejs/data/generate.csv",
-"output_datafile_path": "../nodejs/data/preprocessed_generate.csv",
-"scaler_file_path":"../nodejs/data/scaler.save",
+"input_datafile_path": "../../data/generate.csv",
+"processed_output_datafile_path": "../../data/preprocessed_generate.csv",
+"raw_output_datafile_path":"../../data/raw_generate.csv",
+"scaler_file_path":"../../data/scaler.save",
 "sequence_length": 30,
-"offset": 30
+"offset": 30,
+"max_starting_lay_price": 15,
+"max_starting_back_price": 20
 }

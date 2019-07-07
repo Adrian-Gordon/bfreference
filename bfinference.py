@@ -47,7 +47,7 @@ column_increment = 0
 
 limit = 0.01
 
-scaler = joblib.load("scaler.save")
+scaler = joblib.load(config["scaler_location"])
 
 with tf.Session() as sess:
   sess.run(init)

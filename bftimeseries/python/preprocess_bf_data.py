@@ -15,7 +15,7 @@ from sklearn.externals import joblib
 class GenerateData:
   
 
-  def __init__(self, datafile_path,scaler_path,seq_length, offset, output_path):
+  def __init__(self, datafile_path,scaler_path,seq_length, offset, processed_output_path, raw_output_path):
     '''
       arguments:
         datafile_path -- string, filepath for input datafile
@@ -23,13 +23,18 @@ class GenerateData:
         seq_length -- integer, no of entries per timeseries
         offset -- integer, offset from start of data series to use in output. 
                   e.g. seq_length= 30, offset = 30 : skip first 30,then use the next 30
-
+        processed_output_path -- string, filepath for processed output data
+        raw_output_path -- string, filepath for raw output data (for the sequences that are to be used)
 
     '''
     self.data =[]
-    self.included_data = pd.DataFrame() #data to be included - i.e. those with odds in the required rance
+    self.scaler_path = scaler_path
+    self.processed_output_path = processed_output_path
+    self.raw_output_path = raw_output_path
+    self.included_data = pd.DataFrame() #data to be included - i.e. those with odds in the required range, and from tghe required offset
     self.processed_data =pd.DataFrame() #the processed data
     self.data = pd.read_csv(datafile_path)
+    print("Loaded")
     self.data['layprice1'] = self.data['layprice1'].replace(0,1000)
     self.data['layprice2'] = self.data['layprice2'].replace(0,1000)
     self.data['layprice3'] = self.data['layprice3'].replace(0,1000)
@@ -75,75 +80,92 @@ class GenerateData:
     self.data['backdepth10'] = self.data['backdepth10'].replace(0,1)
 
     self.nsequences = len(self.data) / ( seq_length + offset)
+    #print("nsequences: " , len(self.data), self.nsequences)
 
   def preprocess(self, max_starting_lay_price, max_starting_back_price, seq_length, offset):
+    print("Preprocessing")
     for i in range (self.nsequences):
-      sequence  = self.data[i * seq_length + offset: (i * seq_length) + seq_length + offset]
+      asequence  = self.data[i * seq_length + offset: (i * seq_length) + seq_length + offset].copy()
       add_it = False
-      for index, row in sequence.iterrows():
+      for index, row in asequence.iterrows():
         if row['layprice1'] <= max_starting_lay_price and row['backprice1'] <= max_starting_back_price:
           add_it = True
           
       if add_it:
-          self.included_data = self.included_data.append(sequence,ignore_index = True)
+          self.included_data = self.included_data.append(asequence,ignore_index = True)
+      #print("add it: ", add_it)
 
-    n_good_sequences = len(self.included_data) / (seq_length + offset) #the number of sequences to preprocess
+    n_good_sequences = len(self.included_data) / (seq_length) #the number of sequences to preprocess
 
-    print("n_good_sequences", n_good_sequences)
+    print("Preprocessing ", n_good_sequences , "sequences")
+    self.included_data.to_csv(self.raw_output_path, index = False)
 
     for j in range(n_good_sequences):
-      sequence  = self.included_data[i * seq_length + offset: (i * seq_length) + seq_length + offset]
+      #print("included data: ", self.included_data)
+      #print("processing: ", j)
+      sequence  = self.included_data[j * seq_length: (j + 1)* seq_length].copy().reset_index(drop = True)
+      #print(sequence)
+     
       starting_layprice1 = sequence['layprice1'][0]
-      print(starting_layprice1)
+      starting_layprice2 = sequence['layprice2'][0]
+      starting_layprice3 = sequence['layprice3'][0]
+      starting_layprice4 = sequence['layprice4'][0]
+      starting_layprice5 = sequence['layprice5'][0]
+      starting_layprice6 = sequence['layprice6'][0]
+      starting_layprice7 = sequence['layprice7'][0]
+      starting_layprice8 = sequence['layprice8'][0]
+      starting_layprice9 = sequence['layprice9'][0]
+      starting_layprice10 = sequence['layprice10'][0]
 
-'''
-    print("Generating Sequences")
-    _nsequences = len(GenerateData.data) / ( seq_length + offset)
-    print(_nsequences)
+      starting_backprice1 = sequence['backprice1'][0]
+      starting_backprice2 = sequence['backprice2'][0]
+      starting_backprice3 = sequence['backprice3'][0]
+      starting_backprice4 = sequence['backprice4'][0]
+      starting_backprice5 = sequence['backprice5'][0]
+      starting_backprice6 = sequence['backprice6'][0]
+      starting_backprice7 = sequence['backprice7'][0]
+      starting_backprice8 = sequence['backprice8'][0]
+      starting_backprice9 = sequence['backprice9'][0]
+      starting_backprice10 = sequence['backprice10'][0]
+
+      
+      sequence['layprice1'] = sequence['layprice1'] - starting_layprice1
+      sequence['layprice2'] = sequence['layprice2'] - starting_layprice2
+      sequence['layprice3'] = sequence['layprice3'] - starting_layprice3
+      sequence['layprice4'] = sequence['layprice4'] - starting_layprice4
+      sequence['layprice5'] = sequence['layprice5'] - starting_layprice5
+      sequence['layprice6'] = sequence['layprice6'] - starting_layprice6
+      sequence['layprice7'] = sequence['layprice7'] - starting_layprice7
+      sequence['layprice8'] = sequence['layprice8'] - starting_layprice8
+      sequence['layprice9'] = sequence['layprice9'] - starting_layprice9
+      sequence['layprice10'] = sequence['layprice10'] - starting_layprice10
+
+      sequence['backprice1'] = sequence['backprice1'] - starting_backprice1
+      sequence['backprice2'] = sequence['backprice2'] - starting_backprice2
+      sequence['backprice3'] = sequence['backprice3'] - starting_backprice3
+      sequence['backprice4'] = sequence['backprice4'] - starting_backprice4
+      sequence['backprice5'] = sequence['backprice5'] - starting_backprice5
+      sequence['backprice6'] = sequence['backprice6'] - starting_backprice6
+      sequence['backprice7'] = sequence['backprice7'] - starting_backprice7
+      sequence['backprice8'] = sequence['backprice8'] - starting_backprice8
+      sequence['backprice9'] = sequence['backprice9'] - starting_backprice9
+      sequence['backprice10'] = sequence['backprice10'] - starting_backprice10
+
+      #print(sequence)
+
+      self.processed_data = self.processed_data.append(sequence)
+
+    if n_good_sequences > 0:
+     
+      print("Scaling")
+      scaler = StandardScaler()
+
+      self.processed_data[['layprice1','laydepth1','layprice2','laydepth2','layprice3','laydepth3','layprice4','laydepth4','layprice5','laydepth5','layprice6','laydepth6','layprice7','laydepth7','layprice8','laydepth8','layprice9','laydepth9','layprice10','laydepth10','backprice1','backdepth1','backprice2','backdepth2','backprice3','backdepth3','backprice4','backdepth4','backprice5','backdepth5','backprice6','backdepth6','backprice7','backdepth7','backprice8','backdepth8','backprice9','backdepth9','backprice10','backdepth10']]=scaler.fit_transform(self.processed_data[['layprice1','laydepth1','layprice2','laydepth2','layprice3','laydepth3','layprice4','laydepth4','layprice5','laydepth5','layprice6','laydepth6','layprice7','laydepth7','layprice8','laydepth8','layprice9','laydepth9','layprice10','laydepth10','backprice1','backdepth1','backprice2','backdepth2','backprice3','backdepth3','backprice4','backdepth4','backprice5','backdepth5','backprice6','backdepth6','backprice7','backdepth7','backprice8','backdepth8','backprice9','backdepth9','backprice10','backdepth10']])
+        #save the scaler for later use
+     
+      joblib.dump(scaler, self.scaler_path)
+     
+      self.processed_data.to_csv(self.processed_output_path, index = False)
+      print("Done")
+      
     
-    for i in range (_nsequences):
-      _sequence = GenerateData.data[i * seq_length + offset: (i * seq_length) + seq_length + offset]
-      add_it = False
-      for index, row in _sequence.iterrows():
-        if row['layprice1'] <= 15 and row['backprice1'] <= 20:
-          add_it = True
-          
-      if add_it:
-          GenerateData.processed_data = GenerateData.processed_data.append(_sequence,ignore_index = True)
-
-      print("Generated Sequences")
-
-    print("Scaling")
-    scaler = StandardScaler()
-
-    GenerateData.processed_data[['layprice1','laydepth1','layprice2','laydepth2','layprice3','laydepth3','layprice4','laydepth4','layprice5','laydepth5','layprice6','laydepth6','layprice7','laydepth7','layprice8','laydepth8','layprice9','laydepth9','layprice10','laydepth10','backprice1','backdepth1','backprice2','backdepth2','backprice3','backdepth3','backprice4','backdepth4','backprice5','backdepth5','backprice6','backdepth6','backprice7','backdepth7','backprice8','backdepth8','backprice9','backdepth9','backprice10','backdepth10']]=scaler.fit_transform(GenerateData.processed_data[['layprice1','laydepth1','layprice2','laydepth2','layprice3','laydepth3','layprice4','laydepth4','layprice5','laydepth5','layprice6','laydepth6','layprice7','laydepth7','layprice8','laydepth8','layprice9','laydepth9','layprice10','laydepth10','backprice1','backdepth1','backprice2','backdepth2','backprice3','backdepth3','backprice4','backdepth4','backprice5','backdepth5','backprice6','backdepth6','backprice7','backdepth7','backprice8','backdepth8','backprice9','backdepth9','backprice10','backdepth10']])
-      #save the scaler for later use
-    print("Scaled")
-    joblib.dump(scaler, scaler_path)
-    print("Saved Scaler")
-    print("Saving preprocessed data to: "+ output_path)
-    GenerateData.processed_data.to_csv(output_path, index = False)
-    print("Preprocessed data saved")
-    
-'''
-  
-
-#test
-'''configfilename = sys.argv[1]
-
-with open(configfilename,'r') as f:
-  config = json.load(f)
-gd = GenerateData(config["input_datafile_path"],config["scaler_file_path"],config["sequence_length"], config["offset"],config["output_datafile_path"])
-'''
-#print("processed data: ")
-#print(gd.processed_data)
-#print(gd.data[0:60])
-#input_batch, output_batch = gd.getTrainingSample(60,2,30,10)
-#print(input_batch)
-#print(output_batch)
-
-#reshaped_input_batch = gd.reshape(np.array(input_batch),30, 40)
-#print(reshaped_input_batch)
-
-#reshaped_output_batch = gd.reshape(np.array(output_batch), 10, 2)
-#print(reshaped_output_batch)

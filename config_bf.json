@@ -1,6 +1,6 @@
 {
 "data_modulename":"generate_bf_data",
-"datafilename": "preprocessed_generate.csv",
+"datafilename": "./data/preprocessed_generate.csv",
 "savefilename":"bf-seq2seq0",
 "seq_length": 30,
 "input_sequence_length": 10,
@@ -13,5 +13,6 @@
 "learning_rate" :0.05,
 "l2_regularization_lambda":0.03,
 "gradient_clipping": 2.5,
-"epochs": 100
+"epochs": 100,
+"scaler_location":"./data/scaler.save"
 }
