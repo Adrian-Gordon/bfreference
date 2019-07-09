@@ -1,0 +1,11 @@
+{
+
+"input_datafile_path": "../../data/fake_data.csv",
+"processed_output_datafile_path": "../../data/preprocessed_fake.csv",
+"raw_output_datafile_path":"../../data/raw_fake.csv",
+"scaler_file_path":"../../data/scaler.save",
+"sequence_length": 30,
+"offset": 0,
+"max_starting_lay_price": 15,
+"max_starting_back_price": 20
+}
