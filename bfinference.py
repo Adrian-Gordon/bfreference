@@ -39,8 +39,9 @@ seq2seqInference  = Seq2Seq()
 init = tf.global_variables_initializer()
 
 gd=GenerateData(config["datafilename"])
+gd_raw = GenerateData(config["rawdatafilename"])
 
-n_rows = len(GenerateData.processed_data) / 30
+n_rows = len(gd.processed_data) / 30
 
 
 column_increment = 0
@@ -56,10 +57,18 @@ with tf.Session() as sess:
 
   for row in range(1,n_rows):
     print("NEXT ROW", row)
-    for column in range(1):
+    for column in range(15):
       print("n_rows:", n_rows,"ROW:", row, "NEXT COLUMN: ", column)
+      test_sequence_input_raw = gd_raw.getTestSample(30, 10, row, column)
+      lay_price_start = test_sequence_input_raw[0][0]
+      back_price_start = test_sequence_input_raw[0][2]
+      print("lay_price_start %s", lay_price_start)
+      print("back_price_start %s", back_price_start)
+
       test_sequence_input = gd.getTestSample(30, 10, row, column)
       test_sequence_input_1 = gd.getTestSample(30, 15, row, column)
+
+
 
       print(test_sequence_input.transpose())
 
@@ -84,18 +93,23 @@ with tf.Session() as sess:
       
       observed_ar= np.zeros((15,40))
       for row1 in range(15):
-        observed_ar[row1][0] = test_sequence_input_1[row1][0]
-        observed_ar[row1][20] = test_sequence_input_1[row1][2]
+        observed_ar[row1][0] = test_sequence_input_1[row1][0] 
+        observed_ar[row1][20] = test_sequence_input_1[row1][2] 
       descaled_observed_ar = scaler.inverse_transform(observed_ar)
+
+      descaled_observed_ar[:,0] += lay_price_start
+      descaled_observed_ar[:,20] += back_price_start
       #print(descaled_observed_ar[:,0])
       #print(descaled_observed_ar[:,20])
 
       predicted_ar = np.zeros((5, 40))
       for row2 in range(5):
-        predicted_ar[row2][0]= test_lay_output[row2]
-        predicted_ar[row2][20] =test_lay_output[row2]
+        predicted_ar[row2][0]= test_lay_output[row2] 
+        predicted_ar[row2][20] =test_lay_output[row2] 
 
       descaled_predicted_ar = scaler.inverse_transform(predicted_ar)
+      descaled_predicted_ar[:,0] += lay_price_start
+      descaled_predicted_ar[:,20] += back_price_start
 
 
 

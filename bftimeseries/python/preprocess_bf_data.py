@@ -106,6 +106,7 @@ class GenerateData:
       sequence  = self.included_data[j * seq_length: (j + 1)* seq_length].copy().reset_index(drop = True)
       #print(sequence)
      
+       
       starting_layprice1 = sequence['layprice1'][0]
       starting_layprice2 = sequence['layprice2'][0]
       starting_layprice3 = sequence['layprice3'][0]
@@ -150,6 +151,7 @@ class GenerateData:
       sequence['backprice8'] = sequence['backprice8'] - starting_backprice8
       sequence['backprice9'] = sequence['backprice9'] - starting_backprice9
       sequence['backprice10'] = sequence['backprice10'] - starting_backprice10
+      
 
       #print(sequence)
 

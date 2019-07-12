@@ -1,6 +1,7 @@
 {
 "data_modulename":"generate_bf_data",
 "datafilename": "./data/preprocessed_generate.csv",
+"rawdatafilename": "./data/raw_generate.csv",
 "savefilename":"bf-seq2seq0",
 "seq_length": 30,
 "input_sequence_length": 10,

@@ -9,14 +9,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.externals import joblib
 
 class GenerateData:
-  data =[]
-  processed_data =pd.DataFrame()
+  #data =[]
+  #processed_data =pd.DataFrame()
   def __init__(self, datafile_path):
-    GenerateData.processed_data = pd.read_csv(datafile_path)
+    self.processed_data = pd.read_csv(datafile_path)
     
 
   def getTrainingSample(self,seq_length,batch_size, input_seq_length, output_seq_length):
-    data = GenerateData.processed_data
+    data = self.processed_data
     _nsequences = len(data) / seq_length
     input_batches = []
     output_batches = []
@@ -24,12 +24,12 @@ class GenerateData:
     for i in range(batch_size):
       #n_sequences = len(data) / (input_seq_length + output_seq_length)
       sequence_index = np.random.randint(0,_nsequences)
-      sequence_index = 0
+      #sequence_index = 0
      # print(sequence_index)
       n_starting_indexes = seq_length - (input_seq_length + output_seq_length) -1
       #print(n_starting_indexes)
       starting_index = np.random.randint(0,n_starting_indexes)
-      starting_index = 0
+      #starting_index = 0
       #print(starting_index)
       starting_offset = sequence_index * seq_length
       #print(starting_offset)
@@ -58,7 +58,7 @@ class GenerateData:
     start_index = (offset1 * seq_length) + offset2
     end_index = start_index + input_seq_length
     print("start:", start_index, "end: ", end_index)
-    an_input_sequence = GenerateData.processed_data[start_index:end_index]
+    an_input_sequence = self.processed_data[start_index:end_index]
     input_data = an_input_sequence[['layprice1','laydepth1','backprice1','backdepth1']]
 
     return np.array(input_data)
