@@ -57,20 +57,20 @@ with tf.Session() as sess:
 
   for row in range(1,n_rows):
     print("NEXT ROW", row)
-    for column in range(15):
+    for column in range(1):
       print("n_rows:", n_rows,"ROW:", row, "NEXT COLUMN: ", column)
       test_sequence_input_raw = gd_raw.getTestSample(30, 10, row, column)
       lay_price_start = test_sequence_input_raw[0][0]
       back_price_start = test_sequence_input_raw[0][2]
-      print("lay_price_start %s", lay_price_start)
-      print("back_price_start %s", back_price_start)
+      #print("lay_price_start %s", lay_price_start)
+     # print("back_price_start %s", back_price_start)
 
       test_sequence_input = gd.getTestSample(30, 10, row, column)
       test_sequence_input_1 = gd.getTestSample(30, 15, row, column)
 
 
 
-      print(test_sequence_input.transpose())
+      #print(test_sequence_input.transpose())
 
       feed_dict={encoder_inputs[t]: test_sequence_input[t].reshape(1,config["input_dim"]) for t in range(config["input_sequence_length"])}
       feed_dict.update({decoder_target_inputs[t]: np.zeros([1,config["output_dim"]]) for t in range(config["output_sequence_length"])})
@@ -111,7 +111,11 @@ with tf.Session() as sess:
       descaled_predicted_ar[:,0] += lay_price_start
       descaled_predicted_ar[:,20] += back_price_start
 
+      print(descaled_observed_ar[:,0])
+      print(descaled_observed_ar[:,20])
 
+      print(descaled_predicted_ar[:,0])
+      print(descaled_predicted_ar[:,20])
 
       plt.figure(figsize=(15,4))
       l1, = plt.plot(descaled_observed_ar[:,0], 'b.', label = 'Actual lay')
