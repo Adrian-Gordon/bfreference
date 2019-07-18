@@ -19,7 +19,7 @@ import pandas as pd
 import numpy as np
 
 
-from basicmodel import *
+from seq2seqmodel import *
 
 configfilename = sys.argv[1]
 
