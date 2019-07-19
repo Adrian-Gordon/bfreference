@@ -8,7 +8,6 @@ import sys
 import json
 
 
-
 from sklearn.preprocessing import StandardScaler
 from sklearn.externals import joblib
 
@@ -128,6 +127,8 @@ class BfInferer():
     descaled_predicted_ar[:,20] += starting_backprice1
 
     return descaled_predicted_ar[:,0], descaled_predicted_ar[:,20]
+
+
 
 '''
 
