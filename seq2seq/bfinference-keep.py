@@ -35,7 +35,7 @@ exec(cmd)
  #now do some inference
 
 #create a seq2seq instance
-seq2seqInference  = Seq2Seq()
+seq2seqInference  = Seq2Seq(config)
 init = tf.global_variables_initializer()
 
 gd=GenerateData(config["datafilename"])
@@ -55,7 +55,7 @@ with tf.Session() as sess:
   saver = tf.train.Saver
   saver().restore(sess, os.path.join('./',config["savefilename"]))
 
-  for row in range(1,n_rows):
+  for row in range(0,n_rows):
     print("NEXT ROW", row)
     for column in range(1):
       print("n_rows:", n_rows,"ROW:", row, "NEXT COLUMN: ", column)
@@ -72,8 +72,8 @@ with tf.Session() as sess:
 
       #print(test_sequence_input.transpose())
 
-      feed_dict={encoder_inputs[t]: test_sequence_input[t].reshape(1,config["input_dim"]) for t in range(config["input_sequence_length"])}
-      feed_dict.update({decoder_target_inputs[t]: np.zeros([1,config["output_dim"]]) for t in range(config["output_sequence_length"])})
+      feed_dict={seq2seqInference.encoder_inputs[t]: test_sequence_input[t].reshape(1,config["input_dim"]) for t in range(config["input_sequence_length"])}
+      feed_dict.update({seq2seqInference.decoder_target_inputs[t]: np.zeros([1,config["output_dim"]]) for t in range(config["output_sequence_length"])})
       #print(feed_dict)
       test_out = np.array(sess.run(seq2seqInference.encoder_decoder_inference,feed_dict)).transpose()#.reshape(-1)[:20]
       test_lay_output = test_out[0].reshape(-1)

@@ -32,20 +32,29 @@ bfInferer = BfInferer("./configs/config_bf.json")
 gd = GenerateData('./data/generate.csv')
 
 
-test_sample = gd.getTestSample(60, 10, 30, 0)
-#print(test_sample[:,0])
-test_sample_next = gd.getTestSample(60, 15, 30, 0)
+n_rows = len(gd.processed_data) / 60
 
-lay_predictions, back_predictions = bfInferer.doInference(test_sample)
+print(n_rows)
 
-#print(lay_predictions)
-#print(back_predictions)
-plt.figure(figsize=(15,4))
-l1, = plt.plot(test_sample_next[:,0], 'b.', label = 'Actual lay')
-l2, = plt.plot(test_sample_next[:,20], 'y.', label = 'Actual back')
-l3, = plt.plot(range(10,15),lay_predictions, 'r.', label = 'Predicted lay')
-l4, = plt.plot(range(10,15),back_predictions, 'g.', label = 'Predicted back')
+for row in range(0,n_rows):
+  print("ROW " ,row)
+  for column in range(15):
+    print("coulmn " , column)
+    test_sample = gd.getTestSample(30, 10, (row * 2) + 1, column)
+    #print(test_sample[:,0])
+    test_sample_next = gd.getTestSample(30, 15, (row * 2) + 1, column)
 
-plt.legend(handles=[l1, l2, l3, l4], loc='upper left')
+    lay_predictions, back_predictions = bfInferer.doInference(test_sample)
 
-plt.show()
+    #print(lay_predictions)
+    #print(back_predictions)
+    plt.figure(figsize=(15,4))
+    l1, = plt.plot(test_sample_next[:,0], 'b.', label = 'Actual lay')
+    l2, = plt.plot(test_sample_next[:,20], 'y.', label = 'Actual back')
+    l3, = plt.plot(range(10,15),lay_predictions, 'r.', label = 'Predicted lay')
+    l4, = plt.plot(range(10,15),back_predictions, 'g.', label = 'Predicted back')
+
+    plt.legend(handles=[l1, l2, l3, l4], loc='upper left')
+
+    plt.show()
+    i = raw_input("")

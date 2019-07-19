@@ -60,7 +60,7 @@ class GenerateData:
     #print("start:", start_index, "end: ", end_index)
     an_input_sequence = self.processed_data[start_index:end_index]
     input_data = an_input_sequence[['layprice1','laydepth1','layprice2','laydepth2','layprice3','laydepth3','layprice4','laydepth4','layprice5','laydepth5','layprice6','laydepth6','layprice7','laydepth7','layprice8','laydepth8','layprice9','laydepth9','layprice10','laydepth10','backprice1','backdepth1','backprice2','backdepth2','backprice3','backdepth3','backprice4','backdepth4','backprice5','backdepth5','backprice6','backdepth6','backprice7','backdepth7','backprice8','backdepth8','backprice9','backdepth9','backprice10','backdepth10']]
-
+    #input_data = an_input_sequence[['layprice1','laydepth1','backprice1','backdepth1']]
     return np.array(input_data)
     #input_batches.append(np.array(input_data))
     #return input_batches
