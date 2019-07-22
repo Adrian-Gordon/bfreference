@@ -79,7 +79,7 @@ class GenerateData:
     self.data['backdepth9'] = self.data['backdepth9'].replace(0,1)
     self.data['backdepth10'] = self.data['backdepth10'].replace(0,1)
 
-    self.nsequences = len(self.data) / ( seq_length + offset)
+    self.nsequences = round(len(self.data) / ( seq_length + offset))
     #print("nsequences: " , len(self.data), self.nsequences)
 
   def preprocess(self, max_starting_lay_price, max_starting_back_price, seq_length, offset):
@@ -95,7 +95,7 @@ class GenerateData:
           self.included_data = self.included_data.append(asequence,ignore_index = True)
       #print("add it: ", add_it)
 
-    n_good_sequences = len(self.included_data) / (seq_length) #the number of sequences to preprocess
+    n_good_sequences = round(len(self.included_data) / (seq_length)) #the number of sequences to preprocess
 
     print("Preprocessing ", n_good_sequences , "sequences")
     self.included_data.to_csv(self.raw_output_path, index = False)

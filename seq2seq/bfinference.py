@@ -1,5 +1,6 @@
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 import os
 
@@ -15,7 +16,7 @@ import pandas as pd
 import numpy as np
 
 
-from seq2seqmodel import *
+from .seq2seqmodel import *
 
 
 class BfInferer():
