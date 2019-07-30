@@ -1,0 +1,12 @@
+{
+
+"input_datafile_path": "../../data/generate.csv",
+"processed_output_datafile_path": "../../data/preprocessed_generate_ticks.csv",
+"raw_output_datafile_path":"../../data/raw_generate_ticks.csv",
+"scaler_file_path":"../../data/scaler_ticks.save",
+"sequence_length": 30,
+"offset": 30,
+"window": 15,
+"max_starting_lay_price": 15,
+"max_starting_back_price": 20
+}
