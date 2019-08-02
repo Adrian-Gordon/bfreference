@@ -22,24 +22,25 @@ class GenerateData:
     output_batches = []
 
     for i in range(batch_size):
-      #n_sequences = len(data) / (input_seq_length + output_seq_length)
+      #n_sequences = len(data) / (input_ seq_length + output_seq_length)
       sequence_index = np.random.randint(0,_nsequences)
+      #sequence_index = 0 #for testing
       #sequence_index = 0
      # print(sequence_index)
-      n_starting_indexes = seq_length - (input_seq_length + output_seq_length) -1
+     # n_starting_indexes = seq_length - (input_seq_length + output_seq_length) -1
       #print(n_starting_indexes)
-      starting_index = np.random.randint(0,n_starting_indexes)
+      #starting_index = np.random.randint(0,n_starting_indexes)
       #starting_index = 0
       #print(starting_index)
       starting_offset = sequence_index * seq_length
       #print(starting_offset)
-      an_input_sequence = data[starting_offset + starting_index: starting_offset + starting_index + input_seq_length]
+      an_input_sequence = data[starting_offset : starting_offset + input_seq_length]
       #print(an_input_sequence)
 
       input_data = an_input_sequence[['layprice1']]
       input_batches.append(np.array(input_data))
 
-      an_output_sequence = data[starting_offset + starting_index + input_seq_length:starting_offset +starting_index + input_seq_length + output_seq_length]
+      an_output_sequence = data[starting_offset  + input_seq_length:starting_offset + input_seq_length + output_seq_length]
       #print(an_output_sequence)
       output_data = an_output_sequence['layprice1']
       output_batches.append(np.array(output_data))
@@ -75,11 +76,11 @@ class GenerateData:
     return(np.array(reshaped))
 
 #test
-#gd = GenerateData('./data/preprocessed_generate.csv')
+#gd = GenerateData('../data/preprocessed_generate_ticks.csv')
 #print("processed data: ")
 #print(gd.processed_data)
 #print(gd.data[0:60])
-#input_batch, output_batch = gd.getTrainingSample(30,1,10,5)
+#input_batch, output_batch = gd.getTrainingSample(15,4,10,5)
 #print(input_batch)
 #print(output_batch)
 

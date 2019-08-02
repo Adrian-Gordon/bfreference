@@ -10,118 +10,128 @@ from sklearn.externals import joblib
 
 from generate_bf_data import GenerateData
 
+from trader import Trader
+
 class SeqToSeqModel:
-	def __init__(self, config):
-		self.config = config
-		model = keras.Sequential()
-		model.add(keras.layers.LSTM(200, activation='relu', input_shape=(config['input_sequence_length'], config['input_dim'])))
-		model.add(keras.layers.Dense(100, activation='relu'))
-		model.add(keras.layers.Dense(config['output_sequence_length']))
-		model.compile(loss='mse', optimizer='adam')
-		print(model.summary())
-		self.model = model
-		self.scaler = joblib.load(config["scaler_location"])
+  def __init__(self, config):
+    self.config = config
+    model = keras.Sequential()
+    model.add(keras.layers.LSTM(200, activation='relu', input_shape=(config['input_sequence_length'], config['input_dim'])))
+    model.add(keras.layers.Dense(100, activation='relu'))
+    model.add(keras.layers.Dense(config['output_sequence_length']))
+    model.compile(loss='mse', optimizer='adam')
+    print(model.summary())
+    self.model = model
+    self.scaler = joblib.load(config["scaler_location"])
 
-	def generate_data(self):
-		generateData = GenerateData(self.config['datafilename'])
-		self.input_training_data, self.output_training_data = generateData.getTrainingSample(self.config['seq_length'],self.config['dataset_size'], self.config['input_sequence_length'], self.config['output_sequence_length'])
-		print("input shape: ",self.input_training_data.shape)
-		print(self.input_training_data[0])
-		print("output shape: ",self.output_training_data.shape)
-		print(self.output_training_data[0])
-	def train(self):
-		self.model.fit(self.input_training_data,self.output_training_data, epochs = self.config['epochs'], batch_size = self.config['batch_size'], verbose = 1)
-		self.model.save_weights(self.config['savefilename'])
+  def generate_data(self):
+    generateData = GenerateData(self.config['datafilename'])
+    self.input_training_data, self.output_training_data = generateData.getTrainingSample(self.config['seq_length'],self.config['dataset_size'], self.config['input_sequence_length'], self.config['output_sequence_length'])
+    print("input shape: ",self.input_training_data.shape)
+    print(self.input_training_data[0])
+    print("output shape: ",self.output_training_data.shape)
+    print(self.output_training_data[0])
 
-	def load_weights(self):
-		self.model.load_weights(self.config['savefilename'])
+  def train(self):
+    self.model.fit(self.input_training_data,self.output_training_data, epochs = self.config['epochs'], batch_size = self.config['batch_size'], verbose = 1)
+    self.model.save_weights(self.config['savefilename'])
 
-	def predict(self, data):
-		predictions = self.model.predict(data)
-		return predictions[0]
+  def load_weights(self):
+    self.model.load_weights(self.config['savefilename'])
 
-	def doInference(self, data):
-	    columns = ["layprice1","laydepth1","layprice2","laydepth2","layprice3","laydepth3","layprice4","laydepth4","layprice5","laydepth5","layprice6","laydepth6","layprice7","laydepth7","layprice8","laydepth8","layprice9","laydepth9","layprice10","laydepth10","backprice1","backdepth1","backprice2","backdepth2","backprice3","backdepth3","backprice4","backdepth4","backprice5","backdepth5","backprice6","backdepth6","backprice7","backdepth7","backprice8","backdepth8","backprice9","backdepth9","backprice10","backdepth10"]
-	    
-	    sequence = pd.DataFrame(data, columns = columns)
+  def predict(self, data):
+    predictions = self.model.predict(data)
+    return predictions[0]
 
-	    #prices relative to the first price
+  def doInference(self, data):
+    columns = ["layprice1","laydepth1","layprice2","laydepth2","layprice3","laydepth3","layprice4","laydepth4","layprice5","laydepth5","layprice6","laydepth6","layprice7","laydepth7","layprice8","laydepth8","layprice9","laydepth9","layprice10","laydepth10","backprice1","backdepth1","backprice2","backdepth2","backprice3","backdepth3","backprice4","backdepth4","backprice5","backdepth5","backprice6","backdepth6","backprice7","backdepth7","backprice8","backdepth8","backprice9","backdepth9","backprice10","backdepth10"] 
+    sequence = pd.DataFrame(data, columns = columns)
+    trader = Trader()
 
-	    starting_layprice1 = sequence['layprice1'][0]
-	    starting_layprice2 = sequence['layprice2'][0]
-	    starting_layprice3 = sequence['layprice3'][0]
-	    starting_layprice4 = sequence['layprice4'][0]
-	    starting_layprice5 = sequence['layprice5'][0]
-	    starting_layprice6 = sequence['layprice6'][0]
-	    starting_layprice7 = sequence['layprice7'][0]
-	    starting_layprice8 = sequence['layprice8'][0]
-	    starting_layprice9 = sequence['layprice9'][0]
-	    starting_layprice10 = sequence['layprice10'][0]
+    starting_layprice1 = sequence['layprice1'][0]
+    starting_layprice1_ticks = trader.get_ticks(sequence['layprice1'][0])
+    starting_layprice2_ticks = trader.get_ticks(sequence['layprice2'][0])
+    starting_layprice3_ticks = trader.get_ticks(sequence['layprice3'][0])
+    starting_layprice4_ticks = trader.get_ticks(sequence['layprice4'][0])
+    starting_layprice5_ticks = trader.get_ticks(sequence['layprice5'][0])
+    starting_layprice6_ticks = trader.get_ticks(sequence['layprice6'][0])
+    starting_layprice7_ticks = trader.get_ticks(sequence['layprice7'][0])
+    starting_layprice8_ticks = trader.get_ticks(sequence['layprice8'][0])
+    starting_layprice9_ticks = trader.get_ticks(sequence['layprice9'][0])
+    starting_layprice10_ticks = trader.get_ticks(sequence['layprice10'][0])
 
-	    starting_backprice1 = sequence['backprice1'][0]
-	    starting_backprice2 = sequence['backprice2'][0]
-	    starting_backprice3 = sequence['backprice3'][0]
-	    starting_backprice4 = sequence['backprice4'][0]
-	    starting_backprice5 = sequence['backprice5'][0]
-	    starting_backprice6 = sequence['backprice6'][0]
-	    starting_backprice7 = sequence['backprice7'][0]
-	    starting_backprice8 = sequence['backprice8'][0]
-	    starting_backprice9 = sequence['backprice9'][0]
-	    starting_backprice10 = sequence['backprice10'][0]
+    starting_backprice1_ticks = trader.get_ticks(sequence['backprice1'][0])
+    starting_backprice2_ticks = trader.get_ticks(sequence['backprice2'][0])
+    starting_backprice3_ticks = trader.get_ticks(sequence['backprice3'][0])
+    starting_backprice4_ticks = trader.get_ticks(sequence['backprice4'][0])
+    starting_backprice5_ticks = trader.get_ticks(sequence['backprice5'][0])
+    starting_backprice6_ticks = trader.get_ticks(sequence['backprice6'][0])
+    starting_backprice7_ticks = trader.get_ticks(sequence['backprice7'][0])
+    starting_backprice8_ticks = trader.get_ticks(sequence['backprice8'][0])
+    starting_backprice9_ticks = trader.get_ticks(sequence['backprice9'][0])
+    starting_backprice10_ticks = trader.get_ticks(sequence['backprice10'][0])
 
-	    #print(sequence)
+    print("starting_layprice1_ticks: ", starting_layprice1_ticks)
 
-	    sequence['layprice1'] = sequence['layprice1'] - starting_layprice1
-	    sequence['layprice2'] = sequence['layprice2'] - starting_layprice2
-	    sequence['layprice3'] = sequence['layprice3'] - starting_layprice3
-	    sequence['layprice4'] = sequence['layprice4'] - starting_layprice4
-	    sequence['layprice5'] = sequence['layprice5'] - starting_layprice5
-	    sequence['layprice6'] = sequence['layprice6'] - starting_layprice6
-	    sequence['layprice7'] = sequence['layprice7'] - starting_layprice7
-	    sequence['layprice8'] = sequence['layprice8'] - starting_layprice8
-	    sequence['layprice9'] = sequence['layprice9'] - starting_layprice9
-	    sequence['layprice10'] = sequence['layprice10'] - starting_layprice10
+    print("raw sequqnce: ", sequence['layprice1'])
 
-	    sequence['backprice1'] = sequence['backprice1'] - starting_backprice1
-	    sequence['backprice2'] = sequence['backprice2'] - starting_backprice2
-	    sequence['backprice3'] = sequence['backprice3'] - starting_backprice3
-	    sequence['backprice4'] = sequence['backprice4'] - starting_backprice4
-	    sequence['backprice5'] = sequence['backprice5'] - starting_backprice5
-	    sequence['backprice6'] = sequence['backprice6'] - starting_backprice6
-	    sequence['backprice7'] = sequence['backprice7'] - starting_backprice7
-	    sequence['backprice8'] = sequence['backprice8'] - starting_backprice8
-	    sequence['backprice9'] = sequence['backprice9'] - starting_backprice9
-	    sequence['backprice10'] = sequence['backprice10'] - starting_backprice10
+    #need to iterate over them
 
-	    #print(sequence)
+    tickified_sequence = sequence.copy()
+    tickified_sequence['layprice1'] = tickified_sequence['layprice1'].apply(lambda x: trader.get_ticks(x) - starting_layprice1_ticks)
+    tickified_sequence['layprice2'] = tickified_sequence['layprice2'].apply(lambda x: trader.get_ticks(x) - starting_layprice2_ticks)
+    tickified_sequence['layprice3'] = tickified_sequence['layprice3'].apply(lambda x: trader.get_ticks(x) - starting_layprice3_ticks)
+    tickified_sequence['layprice4'] = tickified_sequence['layprice4'].apply(lambda x: trader.get_ticks(x) - starting_layprice4_ticks)
+    tickified_sequence['layprice5'] = tickified_sequence['layprice5'].apply(lambda x: trader.get_ticks(x) - starting_layprice5_ticks)
+    tickified_sequence['layprice6'] = tickified_sequence['layprice6'].apply(lambda x: trader.get_ticks(x) - starting_layprice6_ticks)
+    tickified_sequence['layprice7'] = tickified_sequence['layprice7'].apply(lambda x: trader.get_ticks(x) - starting_layprice7_ticks)
+    tickified_sequence['layprice8'] = tickified_sequence['layprice8'].apply(lambda x: trader.get_ticks(x) - starting_layprice8_ticks)
+    tickified_sequence['layprice9'] = tickified_sequence['layprice9'].apply(lambda x: trader.get_ticks(x) - starting_layprice9_ticks)
+    tickified_sequence['layprice10'] = tickified_sequence['layprice10'].apply(lambda x: trader.get_ticks(x) - starting_layprice10_ticks)
 
-	    #standardise
-
-	    sequence[['layprice1','laydepth1','layprice2','laydepth2','layprice3','laydepth3','layprice4','laydepth4','layprice5','laydepth5','layprice6','laydepth6','layprice7','laydepth7','layprice8','laydepth8','layprice9','laydepth9','layprice10','laydepth10','backprice1','backdepth1','backprice2','backdepth2','backprice3','backdepth3','backprice4','backdepth4','backprice5','backdepth5','backprice6','backdepth6','backprice7','backdepth7','backprice8','backdepth8','backprice9','backdepth9','backprice10','backdepth10']]=self.scaler.transform(sequence[['layprice1','laydepth1','layprice2','laydepth2','layprice3','laydepth3','layprice4','laydepth4','layprice5','laydepth5','layprice6','laydepth6','layprice7','laydepth7','layprice8','laydepth8','layprice9','laydepth9','layprice10','laydepth10','backprice1','backdepth1','backprice2','backdepth2','backprice3','backdepth3','backprice4','backdepth4','backprice5','backdepth5','backprice6','backdepth6','backprice7','backdepth7','backprice8','backdepth8','backprice9','backdepth9','backprice10','backdepth10']])
-
-
-	    #print(sequence)
+    tickified_sequence['backprice1'] = tickified_sequence['backprice1'].apply(lambda x: trader.get_ticks(x) - starting_backprice1_ticks)
+    tickified_sequence['backprice2'] = tickified_sequence['backprice2'].apply(lambda x: trader.get_ticks(x) - starting_backprice2_ticks)
+    tickified_sequence['backprice3'] = tickified_sequence['backprice3'].apply(lambda x: trader.get_ticks(x) - starting_backprice3_ticks)
+    tickified_sequence['backprice4'] = tickified_sequence['backprice4'].apply(lambda x: trader.get_ticks(x) - starting_backprice4_ticks)
+    tickified_sequence['backprice5'] = tickified_sequence['backprice5'].apply(lambda x: trader.get_ticks(x) - starting_backprice5_ticks)
+    tickified_sequence['backprice6'] = tickified_sequence['backprice6'].apply(lambda x: trader.get_ticks(x) - starting_backprice6_ticks)
+    tickified_sequence['backprice7'] = tickified_sequence['backprice7'].apply(lambda x: trader.get_ticks(x) - starting_backprice7_ticks)
+    tickified_sequence['backprice8'] = tickified_sequence['backprice8'].apply(lambda x: trader.get_ticks(x) - starting_backprice8_ticks)
+    tickified_sequence['backprice9'] = tickified_sequence['backprice9'].apply(lambda x: trader.get_ticks(x) - starting_backprice9_ticks)
+    tickified_sequence['backprice10'] = tickified_sequence['backprice10'].apply(lambda x: trader.get_ticks(x) - starting_backprice10_ticks)
 
 
-	    input_data = sequence[['layprice1']]
-	    input = np.array(input_data)
-	    input = input.reshape(1, 10, 1)
+    print("sequence ticks diff", tickified_sequence['layprice1'])
 
-	    print(input)
+    #standardise
+    tickified_sequence[['layprice1','laydepth1','layprice2','laydepth2','layprice3','laydepth3','layprice4','laydepth4','layprice5','laydepth5','layprice6','laydepth6','layprice7','laydepth7','layprice8','laydepth8','layprice9','laydepth9','layprice10','laydepth10','backprice1','backdepth1','backprice2','backdepth2','backprice3','backdepth3','backprice4','backdepth4','backprice5','backdepth5','backprice6','backdepth6','backprice7','backdepth7','backprice8','backdepth8','backprice9','backdepth9','backprice10','backdepth10']]=self.scaler.transform(tickified_sequence[['layprice1','laydepth1','layprice2','laydepth2','layprice3','laydepth3','layprice4','laydepth4','layprice5','laydepth5','layprice6','laydepth6','layprice7','laydepth7','layprice8','laydepth8','layprice9','laydepth9','layprice10','laydepth10','backprice1','backdepth1','backprice2','backdepth2','backprice3','backdepth3','backprice4','backdepth4','backprice5','backdepth5','backprice6','backdepth6','backprice7','backdepth7','backprice8','backdepth8','backprice9','backdepth9','backprice10','backdepth10']])
 
-	    results = self.predict([input])
+    #print(sequence)
+    input_data = tickified_sequence[['layprice1']]
+    input = np.array(input_data)
+    input = input.reshape(1, 10, 1)
 
+    print(input)
 
-	    #de-standardize
-	    predicted_ar = np.zeros((5, 40))
-	    for row2 in range(5):
-	      predicted_ar[row2][0]= results[row2]
-	      
+    results = self.predict([input])
 
-	    descaled_predicted_ar = self.scaler.inverse_transform(predicted_ar)
-	    descaled_predicted_ar[:,0] += starting_layprice1
+    print("results", results)
+    #de-standardize
+    predicted_ar = np.zeros((5, 40))
+    for row2 in range(5):
+      predicted_ar[row2][0]= results[row2]
+      
 
-	    return descaled_predicted_ar[:,0]
+    descaled_predicted_ar = self.scaler.inverse_transform(predicted_ar)
+    print(descaled_predicted_ar[:,0])
+    #descaled_predicted_ar[:,0] += starting_layprice1
+    descale = lambda x: trader.increment_price(starting_layprice1,x)
+
+    descaled = descale(descaled_predicted_ar)
+    #descaled_predicted_ar = descaled_predicted_ar.apply(lambda x: trader.increment_price(starting_layprice1,x))
+    print(descaled)
+
+    return descaled
 
 
 #test
@@ -146,6 +156,15 @@ configs ={
 "scaler_location":"../data/scaler.save"
 }
 
+''' Train
+seq_to_seq_model = SeqToSeqModel(configs)
+seq_to_seq_model.generate_data()
+seq_to_seq_model.train()
+
+'''
+
+''' Do Inference
+'''
 seq_to_seq_model = SeqToSeqModel(configs)
 seq_to_seq_model.load_weights()
 
@@ -162,9 +181,11 @@ raw_data1 = [[5.5,19.29,5.6,29.05,5.7,27.56,5.8,7.59,5.9,78.18,6,38.22,6.2,213.1
 
 result = seq_to_seq_model.doInference(raw_data1)
 print(result)
+'''
 
 #predictions = seq_to_seq_model.predict(np.array([[[-0.00764403],[-0.00899999],[-0.00764403],[-0.00696605],[-0.00628807],[-0.00628807],[-0.00493212],[-0.00493212],[-0.00628807],[-0.0056101]]]))
 #print(predictions)
 #seq_to_seq_model.generate_data()
 #print(seq_to_seq_model.input_training_data)
 #seq_to_seq_model.train()
+'''
