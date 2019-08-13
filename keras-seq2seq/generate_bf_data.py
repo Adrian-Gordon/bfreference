@@ -15,7 +15,7 @@ class GenerateData:
     self.processed_data = pd.read_csv(datafile_path)
     
 
-  def getTrainingSample(self,seq_length,batch_size, input_seq_length, output_seq_length):
+  def getTrainingSample(self,seq_length,batch_size, input_seq_length, output_seq_length, input_attributes, output_attribute):
     data = self.processed_data
     _nsequences = len(data) / seq_length
     input_batches = []
@@ -35,14 +35,16 @@ class GenerateData:
       starting_offset = sequence_index * seq_length
       #print(starting_offset)
       an_input_sequence = data[starting_offset : starting_offset + input_seq_length]
-      #print(an_input_sequence)
+      #print("an_input_sequence: {}".format(an_input_sequence))
 
-      input_data = an_input_sequence[['layprice1']]
+      #input_data = an_input_sequence[['layprice1']]
+      input_data = an_input_sequence[input_attributes]
       input_batches.append(np.array(input_data))
 
       an_output_sequence = data[starting_offset  + input_seq_length:starting_offset + input_seq_length + output_seq_length]
-      #print(an_output_sequence)
-      output_data = an_output_sequence['layprice1']
+      #print("an_output_sequence: {}".format(an_output_sequence))
+      #output_data = an_output_sequence['layprice1']
+      output_data = an_output_sequence[output_attribute]
       output_batches.append(np.array(output_data))
 
 
@@ -80,7 +82,7 @@ class GenerateData:
 #print("processed data: ")
 #print(gd.processed_data)
 #print(gd.data[0:60])
-#input_batch, output_batch = gd.getTrainingSample(15,4,10,5)
+#input_batch, output_batch = gd.getTrainingSample(15,1,10,5,['layprice1','laydepth1'],'layprice1')
 #print(input_batch)
 #print(output_batch)
 
